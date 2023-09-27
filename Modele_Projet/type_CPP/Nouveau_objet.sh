@@ -18,7 +18,7 @@
 nbParam_min=1
 #	# Informations sur l'objet à creer.
 nomObjet=""
-premierAuteur="Mewen PUREN"
+premierAuteur="Jean Eude"
 lstAuteur=""
 dateCreation=`date +"%d %b %Y" | sed -e "s/^\(.\)/\U\1/" | sed -e "s/\(^[^ ]* [^ ]*\) \(.\)/\1 \U\2/"`
 action="faireQuelqueChoseDeSuperUtileMaisJeNeSaisPasEncoreQuoi"
@@ -51,7 +51,7 @@ supprimer(){
 		echo "fonction supprimer() : $# paramètre reçu au lieu de 2."
 		return 128
 	fi
-	F="$Src/$1.c"
+	F="$Src/$1.cpp"
 	if ( test -e $F ) then
 		rm -vi $F
 	fi
@@ -59,7 +59,7 @@ supprimer(){
 		return 1
 	fi
 
-	F="$Inc/$1.h"
+	F="$Inc/$1.hpp"
 	if ( test -e $F ) then
 		rm -vi $F
 	fi
@@ -67,7 +67,7 @@ supprimer(){
 		return 1
 	fi
 
-	F="$Test/$1.c"
+	F="$Test/$1.cpp"
 	if ( test -e $F ) then
 		rm -vi $F
 	fi
@@ -195,10 +195,10 @@ i=1
 continu=1
 while ( test $continu -eq 1 ) ; do
 	continu=0
-	fichier="$Inc/$nomF.h"
+	fichier="$Inc/$nomF.hpp"
 	while ( test -e $fichier ) ; do
 		nomF2="$nomF"_"$i"
-		demandeDoublon $fichier "$Inc/$nomF2.h"
+		demandeDoublon $fichier "$Inc/$nomF2.hpp"
 		case $? in
 			1) supprimer $nom ;;
 			2) nom=$nom2 ; i=expr`$i + 1` ;;
@@ -206,14 +206,14 @@ while ( test $continu -eq 1 ) ; do
 			4) echo "Abandon de la création du fichier" ; exit 2 ;;
 			*) echo "Je ne connais pas cette possibilité"
 		esac
-		fichier="$Inc/$nomF.h"
+		fichier="$Inc/$nomF.hpp"
 	done
 	
-	fichier="$src/$nomF.c"
+	fichier="$src/$nomF.cpp"
 	while ( test -e $fichier ) ; do
 		continu=1
 		nomF2="$nomF"_"$i"
-		demandeDoublon $fichier "$src/$nomF2.c"
+		demandeDoublon $fichier "$src/$nomF2.cpp"
 		case $? in
 			1) supprimer $nom ;;
 			2) nom=$nom2 ; i=expr`$i + 1` ;;
@@ -221,14 +221,14 @@ while ( test $continu -eq 1 ) ; do
 			4) echo "Abandon de la création du fichier" ; exit 2 ;;
 			*) echo "Je ne connais pas cette possibilité"
 		esac
-		fichier="$src/$nomF.c"
+		fichier="$src/$nomF.cpp"
 	done
 	
-	fichier="$test/$nomF.c"
+	fichier="$test/$nomF.cpp"
 	while ( test -e $fichier ) ; do
 		continu=1
 		nomF2="$nomF"_"$i"
-		demandeDoublon $fichier "$test/$nomF2.c"
+		demandeDoublon $fichier "$test/$nomF2.cpp"
 		case $? in
 			1) supprimer $nom ;;
 			2) nom=$nom2 ; i=expr`$i + 1` ;;
@@ -236,12 +236,12 @@ while ( test $continu -eq 1 ) ; do
 			4) echo "Abandon de la création du fichier" ; exit 2 ;;
 			*) echo "Je ne connais pas cette possibilité"
 		esac
-		fichier="$test/$nomF.c"
+		fichier="$test/$nomF.cpp"
 	done
 done
-Src="$Src/$nomF.c"
-Inc="$Inc/$nomF.h"
-Test="$Test/test_$nomF.c"
+Src="$Src/$nomF.cpp"
+Inc="$Inc/$nomF.hpp"
+Test="$Test/test_$nomF.cpp"
 
 #	# Création des fichiers.
 cp "$Mod/src.c" $Src

@@ -12,9 +12,10 @@
 nbParam_min=1
 #	# Informations sur le modele de projet.
 modelProjet="$HOME/.config/Modele_Projet"
+langage="C"
 #	# Informations sur le projet à creer.
 nomProjet=""
-premierAuteur="Mewen PUREN"
+premierAuteur="Jean Eude"
 lstAuteur=""
 description=""
 github=""
@@ -166,6 +167,7 @@ done
 
 
 # SCRIPT
+modelProjet="$modelProjet/type_$langage"
 cp -r "$modelProjet" "./$nomD"
 chmod a+x "./$nomD/ParamProject.sh"
 ./$nomD/ParamProject.sh "$nomProjet" -a "$premierAuteur" "$premierAuteur$lstAuteur" $github "$description"
