@@ -65,7 +65,7 @@ while ( test -z "$NouveauProjet" ) ; do
 		echo -e "\tLe script \"$reponse\" n'existe pas."
   		exit 1
 	fi
-	if ( test $( grep "$ligneDossierModele" | wc -l ) -eq 0 ) then
+	if ( test $( grep "$ligneDossierModele" $reponse | wc -l ) -eq 0 ) then
 		echo "Le fichier \"$NouveauProjet\" est déjà configuré."
 		NouveauProjet=""
   		exit 1
