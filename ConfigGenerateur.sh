@@ -27,13 +27,13 @@ while ( test -z "$dossierModele" ) ; do
 		fi
 	else
 		echo -e "\tLe dossier \"$reponse\" n'existe pas."
-   		echo "Voulez-vous importer le dossier contenant les modèle de projet depuis github ?(oO=oui) : "
-      		read reponse
-      		if ( test "$reponse" == "o" -o  "$reponse" == "O" -o "$reponse" == "y" -o  "$reponse" == "Y" ) then
+   		echo -n "Voulez-vous importer le dossier contenant les modèle de projet depuis github ?(oO=oui) : "
+      		read choix
+      		if ( test "$choix" == "o" -o  "$choix" == "O" -o "$choix" == "y" -o  "$choix" == "Y" ) then
 	 		if ( test -d "$dossierConfig/.git" -a -d "$dossierConfig/Modele_Projet" ) then
 				if ( test -d "$dossierConfig/Modele_Projet" ) then
-     					cp -r $dossierConfig/Modele_Projet $reponse
 					dossierModele=`realpath "$reponse"`
+     					cp -r $dossierConfig/Modele_Projet $dossierModele
      				else
 					echo -e "\tLe dossier \"$dossierConfig/Modele_Projet\" existe, mais ne contient pas de dossier de projet type (Veuillez faire un 'git pull' pour le récupérer)."
      					exit 1
