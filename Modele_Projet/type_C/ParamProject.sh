@@ -109,6 +109,7 @@ fi
 # github # ==> ~~ADRESSE_GIT~~
 # lstAuteur # ==> ~~AUTEURS~~
 cd $dossierProjet
+mv .gitignore2 .gitignore
 
 #	# Modification des fichiers du projet à paramètrer.
 #	#	# Le fichier main.c
