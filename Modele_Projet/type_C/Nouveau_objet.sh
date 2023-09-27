@@ -22,7 +22,7 @@ premierAuteur="$premierAuteur"
 lstAuteur=""
 defAuteur=0
 dateCreation=`date +"%d %b %Y" | sed -e "s/^\(.\)/\U\1/" | sed -e "s/\(^[^ ]* [^ ]*\) \(.\)/\1 \U\2/"`
-action="faireQuelqueChoseDeSuperUtileMaisJeNeSaisPasEncoreQuoi"
+action=""
 #	# Fichier à créer
 Src="src"
 Inc="include"
@@ -179,6 +179,7 @@ while ( test $# -ne 0 ) ; do
 	esac
 done
 lstAuteur="$premierAuteur$lstAuteur"
+action="faireQuelqueChoseDeSuperUtileMaisJeNeSaisPasEncoreQuoi"
 
 # SCRIPT
 #	# Nommage des fichiers déclarant, définissant et testant un <nomObjet>.
