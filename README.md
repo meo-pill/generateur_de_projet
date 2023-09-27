@@ -1,2 +1,2 @@
 # generateur_de_projet
-sert a gener des projet est leur fichier
+Permet de générer un projet en langage C.
