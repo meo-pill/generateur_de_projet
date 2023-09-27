@@ -179,7 +179,9 @@ while ( test $# -ne 0 ) ; do
 	esac
 done
 lstAuteur="$premierAuteur$lstAuteur"
-action="faireQuelqueChoseDeSuperUtileMaisJeNeSaisPasEncoreQuoi"
+if ( test -z "$action" ) then
+	action="faireQuelqueChoseDeSuperUtileMaisJeNeSaisPasEncoreQuoi"
+ fi
 
 # SCRIPT
 #	# Nommage des fichiers déclarant, définissant et testant un <nomObjet>.
