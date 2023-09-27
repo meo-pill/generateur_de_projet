@@ -11,11 +11,11 @@
 #	# Gestion du nombre de paramètre
 nbParam_min=1
 #	# Informations sur le modele de projet.
-modelProjet="$HOME/.config/Modele_Projet"
+dossierModele="$dossierModele"
 langage="C"
 #	# Informations sur le projet à creer.
 nomProjet=""
-premierAuteur="Jean Eude"
+premierAuteur="$premierAuteur"
 lstAuteur=""
 description=""
 github=""
@@ -23,15 +23,18 @@ defAuteur=0
 
 
 # CONSIGNE D'UTILISATION
-Usage="Usage : $0 <nomProjet> [{ [-a [<auteur>]... a-] | [<description>] | [-g] }]..."
+Usage="Usage : $0 [-h] <nomProjet> [{ [-a [<auteur>]... a-] | [<description>] | [-g] }]..."
 Detail_nomProjet="\t- <nomProjet> : Le nom du projet à paramètrer.\n\t\t+Ne doit avoir que des lettre, des nombres, et des underscore('_')."
 Detail_auteur="\t- <auteur> : Le nom de l'un des auteur de cette objet.\n\t\t+Le premier nom donnée est le responsable du développement de cette objet.\n\t\t+La liste des auteurs est délimité par les balises '-a' et 'a-'."
 Detail_description="\t- <description> : Le projet sert à <description>."
 Detail_git="\t- -g : création d'un dépot github 'https://github.com/<pseudo-git>/<nomProjet>' nécesite l'instalation de gh"
 Detail="$Usage\n-h : Affiche cette aide.\n$Detail_nomProjet\n$Detail_auteur\n$Detail_description\n$Detail_git"
 if ( test "$1" == "-h" ) then
+	echo ""
+	echo "Affichage de l'aide :"
 	echo -e "$Detail"
-	exit 1
+	echo ""
+	exit 0
 fi
 
 
@@ -73,9 +76,9 @@ nom="$nomProjet"
 nomD="$nom"
 while ( test -e $nomD ) ; do
 	nomD2="$nom"_"$i"
-	echo "Le dossier $dossier existe déjà, que voulez-vous faire ?"
+	echo "Le dossier '$nomD' existe déjà, que voulez-vous faire ?"
 		echo -e "\t1) L'écraser"
-		echo -e "\t2) Changer le nom du dossier pour $nomD2"
+		echo -e "\t2) Changer le nom du dossier pour '$nomD2'"
 		echo -e "\t3) Changer le nom du dossier"
 		echo -e "\t4) Abandonner"
 	echo -n "Choix : "
@@ -89,7 +92,7 @@ while ( test -e $nomD ) ; do
 				rm -vfr $nomD
 			fi
 			;;
-		"2") nom="$nomD2" ; i=expr`$i + 1` ;;
+		"2") nomD="$nomD2" ; i=expr`$i + 1` ;;
 		"3") # Changer le nom du dossier
 			echo -n "Nouveau nom : "
 			read nomT
@@ -97,13 +100,13 @@ while ( test -e $nomD ) ; do
 				echo "Le nom '$nomT' n'est pas valide. Il ne doit contenir que des lettre, des chiffres et des underscore."
 			else
 				nom="$nomT"
+				nomD="$nom"
 				i=1
 			fi
 			;;
 		"4") echo "Abandon de la création du dossier" ; exit 2 ;;
 		*) echo "Je ne connais pas cette possibilité"
 	esac
-	nomD="$nom"
 done
 
 while ( test $# -ne 0 ) ; do
@@ -167,8 +170,8 @@ done
 
 
 # SCRIPT
-modelProjet="$modelProjet/type_$langage"
-cp -r "$modelProjet" "./$nomD"
+dossierModele="$dossierModele/type_$langage"
+cp -r "$dossierModele" "./$nomD"
 chmod a+x "./$nomD/ParamProject.sh"
 ./$nomD/ParamProject.sh "$nomProjet" -a "$premierAuteur" "$premierAuteur$lstAuteur" $github "$description"
 sortie=$?

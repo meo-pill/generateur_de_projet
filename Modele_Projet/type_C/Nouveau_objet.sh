@@ -6,9 +6,9 @@
 	* Script qui sert à creer les fichier qui déclarent, définissent et testent un objet.
 	*
 	* Pour l objet A, ce script générera les fichiers suivant :
-	* - ./include/A.c
-	* - ./src/A.c  ===> ./objet/A.o (Compiler par le Makefile)
-	* - ./test/A.c ===> ./bin/test_A.exe (Compiler par le Makefile)
+	* - ./include/A.$ext_H
+	* - ./src/A.$ext_H  ===> ./objet/A.o (Compiler par le Makefile)
+	* - ./test/A.$ext_H ===> ./bin/test_A.out (Compiler par le Makefile)
 	*
 '
 
@@ -18,8 +18,9 @@
 nbParam_min=1
 #	# Informations sur l'objet à creer.
 nomObjet=""
-premierAuteur="Jean Eude"
+premierAuteur="$premierAuteur"
 lstAuteur=""
+defAuteur=0
 dateCreation=`date +"%d %b %Y" | sed -e "s/^\(.\)/\U\1/" | sed -e "s/\(^[^ ]* [^ ]*\) \(.\)/\1 \U\2/"`
 action="faireQuelqueChoseDeSuperUtileMaisJeNeSaisPasEncoreQuoi"
 #	# Fichier à créer
@@ -27,14 +28,17 @@ Src="src"
 Inc="include"
 Test="test"
 Mod=".Modele"
+ext_H="h"
+ext_C="c"
+preTest="test_"
 
 
 # CONSIGNE D'UTILISATION
-Usage="Usage : $0 [-h] [ -a [<auteur>]... a- ] <nomObjet> [<action>]"
-Detail_auteur="\t- <auteur> : Le nom de l'un des auteur de cette objet.\n\t\t+Le premier nom donnée est le responsable du développement de cette objet.\n\t\t+La liste des auteurs est délimité par les balises '-a' et 'a-'."
+Usage="Usage : $0 [-h] <nomObjet> [{ [-a [<auteur>]... a-] | [<action>] }]..."
 Detail_nomObjet="\t- <nomObjet> : Le nom du nouvelle objet à créer.\n\t\t+Doit commencer par une majuscule.\n\t\t+Ne doit avoir que des lettre, des nombres, et des underscore('_')."
+Detail_auteur="\t- <auteur> : Le nom de l'un des auteur de cette objet.\n\t\t+Le premier nom donnée est le responsable du développement de cette objet.\n\t\t+La liste des auteurs est délimité par les balises '-a' et 'a-'."
 Detail_action="\t- <action> : L'objet sert à <action>."
-Detail="$Usage\n-h : Affiche cette aide.\n$Detail_auteur\n$Detail_nomObjet\n$Detail_action"
+Detail="$Usage\n-h : Affiche cette aide.\n$Detail_nomObjet\n$Detail_auteur\n$Detail_action"
 if ( test "$1" == "-h" ) then
 	echo -e "$Detail"
 	exit 1
@@ -51,7 +55,7 @@ supprimer(){
 		echo "fonction supprimer() : $# paramètre reçu au lieu de 2."
 		return 128
 	fi
-	F="$Src/$1.c"
+	F="$Src/$1.$ext_C"
 	if ( test -e $F ) then
 		rm -vi $F
 	fi
@@ -59,7 +63,7 @@ supprimer(){
 		return 1
 	fi
 
-	F="$Inc/$1.h"
+	F="$Inc/$1.$ext_H"
 	if ( test -e $F ) then
 		rm -vi $F
 	fi
@@ -67,7 +71,7 @@ supprimer(){
 		return 1
 	fi
 
-	F="$Test/$1.c"
+	F="$Test/$1.$ext_C"
 	if ( test -e $F ) then
 		rm -vi $F
 	fi
@@ -84,9 +88,9 @@ supprimer(){
 	* return : 0=supprimer ; 1=annuler ; *=erreur
 	'
 demandeDoublon(){
-	echo "Le fichier $1 existe déjà, que voulez-vous faire ?"
+	echo "Le fichier '$1' existe déjà, que voulez-vous faire ?"
 		echo -e "\t1) L'écraser"
-		echo -e "\t2) Changer le nom du fichier pour $2"
+		echo -e "\t2) Changer le nom du fichier pour '$2'"
 		echo -e "\t3) Changer le nom du fichier"
 		echo -e "\t4) Abandonner"
 	echo -n "Choix : "
@@ -97,7 +101,6 @@ demandeDoublon(){
 		fi
 	done
 	return 0
-	
 }
 
 # VÉRIFIÉ LES PARAMÉTRES (Renvoyer 1 en cas d'erreur)
@@ -120,39 +123,6 @@ fi
 #fi
 #shift
 
-#Test des paramètres optionnels informant sur le ou les auteurs du documents. :
-if ( test $# -ge 1 -a $1 == "-a" ) then
-	shift
-	premierAuteur=""
-	while ( test $# -ge 1 -a "$1" != "a-" ) ; do
-		if ( test -z "$premierAuteur" ) then
-			premierAuteur="$1"
-		else
-			if ( test -z "$lstAuteur" ) then
-				lstAuteur="$1"
-			else
-				lstAuteur="$lstAuteur ; $1"
-			fi
-		fi
-		shift
-	done
-	if ( test $# -ge 1 -a $1 != "a-" ) then
-		echo "Erreur sur les paramètres optionnels informant sur les auteurs de l'objet. Le dernier paramètre de la liste d'auteur doit-être '-a' ($1)."
-		echo -e "$Usage\n$Detail_auteur"
-		exit 2
-	fi
-	shift
-fi
-# ATTENTION : taille de ce paramètre inconnue
-
-# Fin des paramètres optionnels
-if ( test $# -lt 1 ) then
-	echo "$Error il faut encore au moins 1 paramètre ($# paramètres restant)"
-	echo "Impossible d'obtenir le nom de l'objet."
-	echo -e "$Detail"
-	exit 1
-fi
-
 #Test du paramètre <nomObjet> :
 if ( test $( echo "$1" | grep -v "^[[:upper:]]" ) ) then
 	echo "Erreur sur le paramètre <nomObjet> ($1)."
@@ -166,87 +136,103 @@ if ( test $( echo "$1" | grep "[^a-zA-Z0-9_]" ) ) then
 	echo -e "$Usage\n$Detail_nomObjet"
 	exit 2
 fi
-nomObjet=$1
+nomObjet="$1"
 shift
 
-#Test du paramètre <action> :
-if ( test $# -ne 0 ) then
-	action="$1"
-	shift
-fi
-
-if ( test $# -ne 0 ) then
-	echo "$Error trop de paramètre ($# paramètres restant)"
-	echo "Tout les paramètres aurait déjà dût servir."
-	echo -e "$Detail"
-	exit 1
-fi
-
+while ( test $# -ne 0 ) ; do
+	case "$1" in
+		"-a") #Test des paramètres optionnels informant sur le ou les auteurs du documents. :
+			shift
+			if ( test $defAuteur -eq 0 ) then
+				premierAuteur=""
+				defAuteur=1
+			fi
+			while ( test $# -ne 0 -a "$1" != "a-" ) ; do
+				if ( test -z "$premierAuteur" ) then
+					premierAuteur="$1"
+				else
+					if ( test -z "$lstAuteur" ) then
+						lstAuteur=" :: $1"
+					else
+						lstAuteur="$lstAuteur ; $1"
+					fi
+				fi
+				shift
+			done
+			if ( test $# -eq 0 ) then
+				echo "Erreur sur les paramètres optionnels informant sur les auteurs de l'objet. Le dernier paramètre de la liste d'auteur doit-être 'a-' ($1)."
+				echo -e "$Usage\n$Detail_auteur"
+				exit 2
+			fi
+			shift
+			;;
+		*) #Test du paramètre optionnel <action> :
+			if ( test -z "$action" ) then
+				action="$1"
+				shift
+			else
+				echo "Erreur sur le paramètre optionnel <action> ($1)."
+				echo "L'utilité de l'objet à déjà était renseigné."
+				echo -e "$Usage\n$Detail_action"
+				exit 2
+			fi
+	esac
+done
+lstAuteur="$premierAuteur$lstAuteur"
 
 # SCRIPT
 #	# Nommage des fichiers déclarant, définissant et testant un <nomObjet>.
-nomF="$nomObjet"
-nomF2=""
-FExisteQuestion=""
-FExiste=0
-suppr=0
+nom="$nomObjet"
+nomF="$nom"
 i=1
-
-continu=1
-while ( test $continu -eq 1 ) ; do
-	continu=0
-	fichier="$Inc/$nomF.h"
-	while ( test -e $fichier ) ; do
-		nomF2="$nomF"_"$i"
-		demandeDoublon $fichier "$Inc/$nomF2.h"
-		case $? in
-			1) supprimer $nom ;;
-			2) nom=$nom2 ; i=expr`$i + 1` ;;
-			3) echo -n "Nouveau nom : " ; read nom ; i=1 ;;
-			4) echo "Abandon de la création du fichier" ; exit 2 ;;
-			*) echo "Je ne connais pas cette possibilité"
-		esac
-		fichier="$Inc/$nomF.h"
-	done
-	
-	fichier="$src/$nomF.c"
-	while ( test -e $fichier ) ; do
-		continu=1
-		nomF2="$nomF"_"$i"
-		demandeDoublon $fichier "$src/$nomF2.c"
-		case $? in
-			1) supprimer $nom ;;
-			2) nom=$nom2 ; i=expr`$i + 1` ;;
-			3) echo -n "Nouveau nom : " ; read nom ; i=1 ;;
-			4) echo "Abandon de la création du fichier" ; exit 2 ;;
-			*) echo "Je ne connais pas cette possibilité"
-		esac
-		fichier="$src/$nomF.c"
-	done
-	
-	fichier="$test/$nomF.c"
-	while ( test -e $fichier ) ; do
-		continu=1
-		nomF2="$nomF"_"$i"
-		demandeDoublon $fichier "$test/$nomF2.c"
-		case $? in
-			1) supprimer $nom ;;
-			2) nom=$nom2 ; i=expr`$i + 1` ;;
-			3) echo -n "Nouveau nom : " ; read nom ; i=1 ;;
-			4) echo "Abandon de la création du fichier" ; exit 2 ;;
-			*) echo "Je ne connais pas cette possibilité"
-		esac
-		fichier="$test/$nomF.c"
+modifie=1
+while ( test $modifie -eq 1 ) ; do
+	modifie=0
+	nomF2="$nom"_"$i"
+	for rep in "$Inc" "$Src" "$Test" ; do
+		ext="$ext_C"
+		if ( test "$rep" == "$Inc" ) then
+			ext="$ext_H"
+		fi
+		F="$rep/$nomF.$ext"
+		while ( test $modifie -eq 0 -a -e "$F" ) ; do
+			modifie=1
+			demandeDoublon $F "$rep/$nomF2.$ext"
+			case $? in
+				1) supprimer $nomF ;;
+				2) nomF="$nomF2" ; i=expr`$i + 1` ;;
+				3) # Changer le nom du fichier
+					echo -n "Nouveau nom : "
+					read nomT
+					if ( test $( echo "$nomT" | grep -v "^[[:upper:]]" ) ) then
+						echo "Le nom '$nomT' n'est pas valide. Il doit commencer par une lettre majuscule."
+					else if ( test $( echo "$1" | grep "[^a-zA-Z0-9_]" ) ) then
+						echo "Le nom '$nomT' n'est pas valide. Il ne doit contenir que des lettre, des chiffres et des underscore."
+					else
+						nom="$nomT"
+						nomF="$nom"
+						i=1
+					fi
+					fi
+					;;
+				4) echo "Abandon de la création du fichier" ; exit 2 ;;
+				*) echo "Je ne connais pas cette possibilité"
+			esac
+			F="$rep/$nomF.$ext"
+		done
+		if ( test $modifie -ne 0 ) then
+			break
+		fi
 	done
 done
-Src="$Src/$nomF.c"
-Inc="$Inc/$nomF.h"
-Test="$Test/test_$nomF.c"
+F_Src="$Src/$nomF.$ext_C"
+F_Inc="$Inc/$nomF.$ext_H"
+F_Test="$Test/$preTest$nomF.$ext_C"
 
 #	# Création des fichiers.
-cp "$Mod/src.c" $Src
-cp "$Mod/include.h" $Inc
-cp "$Mod/test.c" $Test
+cp "$Mod/$Src.$ext_C" $F_Src
+cp "$Mod/$Inc.$ext_H" $F_Inc
+cp "$Mod/$Test.$ext_C" $F_Test
 
 #	# Préparation des donnée à injecter dans les fichiers créer.
 # nomF # ==> ~~FICHIER~~
@@ -254,42 +240,28 @@ cp "$Mod/test.c" $Test
 # dateCreation # ==> ~~DATE~~
 # action # ==> ~~ACTION~~
 # lstAuteur # ==> ~~AUTEURS~~
+# premierAuteur # ==> ~~CHEF~~
 nomVar=`echo "$nomObjet" | sed "s/^\(.\)/\l\1/"` # ==> ~~VAROBJET~~
+
 nomDef=`echo "$nomObjet" | sed "s/^\(.\)/\l\1/"` # ==> ~~NOMDEF~~
 nomDef=`echo "$nomDef" | sed "s/_\([A-Z]\)/_\l\1/"` # ==> ~~NOMDEF~~
 nomDef=`echo "$nomDef" | sed "s/\([A-Z]\)/_\l\1/"` # ==> ~~NOMDEF~~
 nomDef=`echo "$nomDef" | tr "[a-z]" "[A-Z]"` # ==> ~~NOMDEF~~
 
 #	# Modification des fichiers créer.
-#	#	# Le fichier source
-sed -i -e "s/~~FICHIER~~/$nomF/g" $Src
-sed -i -e "s/~~OBJET~~/$nomObjet/g" $Src
-sed -i -e "s/~~AUTEURS~~/$premierAuteur :: $lstAuteur/g" $Src
-sed -i -e "s/~~DATE~~/$dateCreation/g" $Src
-sed -i -e "s/~~ACTION~~/$action/g" $Src
-sed -i -e "s/~~VAROBJET~~/$nomVar/g" $Src
-
-#	#	# Le fichier d'en-tête
-sed -i -e "s/~~NOMDEF~~/$nomDef/g" $Inc
-sed -i -e "s/~~FICHIER~~/$nomF/g" $Inc
-sed -i -e "s/~~OBJET~~/$nomObjet/g" $Inc
-sed -i -e "s/~~AUTEURS~~/$premierAuteur :: $lstAuteur/g" $Inc
-sed -i -e "s/~~DATE~~/$dateCreation/g" $Inc
-sed -i -e "s/~~ACTION~~/$action/g" $Inc
-sed -i -e "s/~~VAROBJET~~/$nomVar/g" $Inc
-
-#	#	# Le fichier de test
-sed -i -e "s/~~FICHIER~~/$nomF/g" $Test
-sed -i -e "s/~~OBJET~~/$nomObjet/g" $Test
-sed -i -e "s/~~AUTEURS~~/$premierAuteur :: $lstAuteur/g" $Test
-sed -i -e "s/~~DATE~~/$dateCreation/g" $Test
-sed -i -e "s/~~ACTION~~/$action/g" $Test
-sed -i -e "s/~~VAROBJET~~/$nomVar/g" $Test
+for F in "$F_Inc" "$F_Src" "$F_Test" ; do
+	sed -i -e "s/~~FICHIER~~/$nomF/g" $F
+	sed -i -e "s/~~OBJET~~/$nomObjet/g" $F
+	sed -i -e "s/~~AUTEURS~~/$lstAuteur/g" $F
+	sed -i -e "s/~~DATE~~/$dateCreation/g" $F
+	sed -i -e "s/~~ACTION~~/$action/g" $F
+	sed -i -e "s/~~VAROBJET~~/$nomVar/g" $F
+done
 
 # FIN
 clear
 ls *
-echo -e "\n\n\t\tLes fichier $Src, $Inc et $Test ont était crée.\n\n"
+echo -e "\n\n\t\tLes fichier '$F_Src', '$F_Inc' et '$F_Test' ont était crée.\n\n"
 echo -e "\n\tFIN DU SCRIPT '$0'."
 exit 0
 

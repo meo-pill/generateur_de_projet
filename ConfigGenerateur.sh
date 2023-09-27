@@ -53,4 +53,13 @@ echo -n "Qu'elle est le nom de l'auteur par défault ? : "
 read auteurDefault
 sed -i -e "s/^premierAuteur=\"\$premierAuteur\"$/premierAuteur=\"$auteurDefault\"/g" $NouveauProjet
 
+for F in `ls $dossierModele/*/Nouveau_objet.sh` ; do
+	chmod a+x $F
+	sed -i -e "s/^premierAuteur=\"\$premierAuteur\"$/premierAuteur=\"$auteurDefault\"/g" $F
+done
+
+for F in `ls $dossierModele/*/Tester.sh` ; do
+	chmod a+x $F
+done
+
 echo "Fin de la configuration"
