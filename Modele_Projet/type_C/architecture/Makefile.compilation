@@ -1,0 +1,70 @@
+#
+# Mode de compilation
+#	Valeurs possibles : yes , no
+DEBUG=yes
+
+#
+# Option compilation
+#
+CC = gcc
+CCOBJ=$(CC) -c
+EXT_SRC=c
+EXT_LIB=h
+EXT_EXEC=out
+PREFIXE_TEST=test_
+
+#
+# Gestion des drapeaux
+#
+
+# # Option de débuggage / optimisation
+CDEBUG=
+ifeq ($(DEBUG),yes)
+	 CDEBUG = -g -D_DEBUG_
+else
+	 CDEBUG = -Os -s -O2 -DNDEBUG
+endif
+
+# # Activation des avertissement
+WARNING_POINTEUR = -Wpointer-arith -Wcast-qual -Wcast-align
+WARNING_CONVERSION = -Wconversion -Wdouble-promotion # -Wold-style-cast -Warith-conversion
+WARNING_OP = -Wfloat-equal -Wlogical-op
+WARNING_INIT = -Wredundant-decls -Wundef
+WARNING_AUTRES = -Wshadow -Wwrite-strings -Wswitch-default -Wswitch-enum # -Woverloaded-virtual
+WARNING = -pedantic -Wall -Wextra $(WARNING_POINTEUR) $(WARNING_CONVERSION) $(WARNING_OP) $(WARNING_INIT) $(WARNING_AUTRES)
+
+# # Assemblage des drapeaux générale
+FLAGS = $(WARNING) $(CDEBUG) -fmax-errors=10 -std=c99 # -std=c++17
+
+#
+# Gestion des option de compilation
+#
+#
+# # Option de compilation final
+LIB =
+
+# # Options de pré-compilation
+CLIB =
+
+#
+# Gestion des commandes système
+#
+ifeq ($(OS),Windows_NT)
+	RM=del
+	RMDIR=del
+	OPEN=open
+	CLEAR=cls
+	DATE=date
+	CMPT_LIGNE_ERR_DEB=set /p="Il y à eu " ; Get-Content -Path
+	CMPT_LIGNE_ERR_FIN=echo " erreurs."
+else
+	RM=rm -vf
+	RMDIR=rm -vfr
+	OPEN=open
+	CLEAR=clear
+	DATE=$(shell date +%Y-%m-%d)
+	CMPT_LIGNE=wc -l <
+	CMPT_LIGNE_ERR_DEB=echo -n "Il y à eu " ; wc -l <
+	CMPT_LIGNE_ERR_FIN=echo " erreurs."
+endif
+
