@@ -1,5 +1,3 @@
-# generateur_de_projet
-Permet de générer un projet en langage C.
 # Le generateur_de_projet
 Ceci est un projet personel, commencé le 'Lundi 13 septembre 2021'.
 C'est un projet codé en **bash**.
