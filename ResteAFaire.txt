@@ -1,0 +1,55 @@
+> Modele d'un projet en C
+> Modele d'un projet en CPP
+>
+> Tester la création d'un projet en C
+> Tester la création d'un projet en CPP
+>
+> Tout envoyer sur le github
+>
+> >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >
+>
+> Gestionnaire de version (Uniquement pour le C et le CPP) :
+>
+> Script de gestion de version de 1 fonction ; enumeration (A)
+> Script de gestion de version de 1 structure ; union      (B)
+> Script de gestion de version de 1 fichier                (C)
+> Script de gestion de version de 1 projet                 (D)
+> !
+	! Version (D) = vD.tC.tBA
+	! Version (C) = vD.tC.tBA(vC.tB.tA)
+	! Version (B) = vD.tC.tBA(vC.tB.tA:vB.tA)
+	! Version (A) = vD.tC.tBA(vC.tB.tA:vB.tA:vA)
+	! vX=version de la catégorie X(voir au dessus pour la liste)
+	! vX=0 => X n'existe pas
+	! vX=1 => X vient d'être créer
+	! vX=n => X à subit n modification
+	! tX=Total des version de type X (1 fonction à la v2 + 1 fonction à la v3 = tA=2+3=5)
+> !
+>
+> Tester de modifier une fonction
+>
+> Adapter le gestionnaire de version du C pour le CPP (même chose que C, mais avec les classes au même niveau que les structure)
+>
+> Tester de modifier une fonction
+>
+> Tout envoyer sur le github
+>
+> >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >>  >
+>
+> Gestionnaire de version (Uniquement pour le LaTeX:tex) :
+>
+> Script de gestion de version de 1 fichier                (A)
+> Script de gestion de version de 1 projet                 (B)
+> !
+	! Version (B) = vC.tB
+	! Version (A) = vC.tB(vB)
+	! vX=version de la catégorie X(voir au dessus pour la liste)
+	! vX=0 => X n'existe pas
+	! vX=1 => X vient d'être créer
+	! vX=n => X à subit n modification
+	! tX=Total des version de type X (1 fichier à la v2 + 1 fichier à la v3 = tA=2+3=5)
+> !
+>
+> Tester de modifier un fichier
+>
+>....
