@@ -10,7 +10,7 @@
 
 : ' Affiche l aide du script et sort. '
 aide() {
-	if  test $# -ne 0 -a "$1" -eq -1  ; then
+	if test $# -ne 0 -a "$1" -eq -1; then
 		echo -e "\n----------------------------------------------\n"
 	fi
 	echo "Affichage de l'aide :"
@@ -19,8 +19,8 @@ aide() {
 	echo "Avec :"
 	echo -ne "\t- <codePredef> : Un code permettant d'activer un choix prédéfinit. Le code doit faire partie de la liste suivant :"
 	i=0
-	for code in ${!lstStrPredef[*]} ; do
-		if  test $((i % 4)) -eq 0  ; then
+	for code in ${!lstStrPredef[*]}; do
+		if test $((i % 4)) -eq 0; then
 			echo -ne "\n\t\t"
 		fi
 		echo -ne "> '$code'($(echo "${lstStrPredef["$code"]}" | cut -d= -f2))\t"
@@ -48,13 +48,12 @@ reponsePredefinie() {
 	shift
 	lstStrPredef["$code"]="$repMinimal=$nom"
 	i=1
-	for rep in "$repMinimal" "$nom" "$@" ; do
+	for rep in "$repMinimal" "$nom" "$@"; do
 		lstPossibilitePredef["$code.$i"]="$rep"
 		i=$((i + 1))
 	done
 	return 0
 }
-
 
 # DÉFINITION DES VARIABLES
 #	# Gérer les choix prédéfinit
@@ -81,7 +80,6 @@ question=""
 : ' Le choix par défault. '
 strChoixDefault=""
 
-
 # PRÉPARER LES RÉPONSE PRÉDÉFINIE
 #	# Quitter
 reponsePredefinie ":q" "quitte" "quitter"
@@ -98,24 +96,23 @@ reponsePredefinie ":o" "oui" "y" "yes"
 #	#	# non
 reponsePredefinie ":n" "non" "no"
 
-
 # ANALYSE DES PARAMÈTRES
 #	# Vérifié si demande d'aide
-if test $# -eq 0  ; then
+if test $# -eq 0; then
 	aide 0
 fi
-for arg in "$@" ; do
-	if test "$arg" = "-h" -o "$arg" = "--help" ; then
+for arg in "$@"; do
+	if test "$arg" = "-h" -o "$arg" = "--help"; then
 		aide 0
 	fi
 done
 #	# Ajout des possibilité de demandes et de la question
 indiceChoix=1
-while test $# -ne 0 ; do
-	if test "$(echo "$1" | cut -c1)" = ":" ; then
+while test $# -ne 0; do
+	if test "$(echo "$1" | cut -c1)" = ":"; then
 		# Vérifié si le code prédéfinit est déjà utilisé
-		for code in "${lstPredef[@]}" ; do
-			if test "$code" = "$1" ; then
+		for code in "${lstPredef[@]}"; do
+			if test "$code" = "$1"; then
 				echo "Le code prédéfinie '$1' à déjà était utilisé."
 				aide -1
 			fi
@@ -123,28 +120,28 @@ while test $# -ne 0 ; do
 		# Obtenir l'affichage du choix du code prédéfinit
 		strChoix="${lstStrPredef["$1"]}"
 		# Vérifié si le code prédéfinit existe
-		if test "$strChoix" = ""  ; then
+		if test "$strChoix" = ""; then
 			echo "Les paramètre commencant par le symbole ':' devrait être un code pour activer un choix possible prédéfinie."
 			aide -1
 		fi
 		# Afficher le choix du code prédéfinit
 		strChoixPossible="$strChoixPossible$strChoix,"
 		# Obtenir les choix possible pour ce choix prédéfinit
-		for nomChoix in $(echo "${!lstPossibilitePredef[*]}" | tr " " "\n" | grep "$1\.") ; do
+		for nomChoix in $(echo "${!lstPossibilitePredef[*]}" | tr " " "\n" | grep "$1\."); do
 			choix="${lstPossibilitePredef["$nomChoix"]}"
-			if  test "${lstChoixPossible["$choix"]}" != ""  ; then
+			if test "${lstChoixPossible["$choix"]}" != ""; then
 				echo "La réponse possible '$choix' à déjà était ajouter."
 				aide -1
 			fi
 			lstChoixPossible["$choix"]="$indiceChoix"
 		done
 		# Sauvegardé le fait d'avoir utilisé ce choix prédéfinit
-		lstPredef=( "${lstPredef[@]}" "$1" )
+		lstPredef=("${lstPredef[@]}" "$1")
 		# Valider l'utilisation de ce paramètre
 		shift
-	elif test "$1" = "-P" ; then
+	elif test "$1" = "-P"; then
 		shift
-		if test $# -eq 0 ; then
+		if test $# -eq 0; then
 			echo "Après une option '-p', il faut donnée au moins le nom du choix et sa réponse minimal."
 			aide -1
 		fi
@@ -152,32 +149,32 @@ while test $# -ne 0 ; do
 		strChoix="$1"
 		shift
 		# Vérifié l'affichage
-		if test "$(echo "$strChoix" | grep -v "=")" ; then
+		if test "$(echo "$strChoix" | grep -v "=")"; then
 			echo "L'affichage du choix devrait avoir un symbole '=' pour séparer le choix minimal de son nom."
 			aide -1
 		fi
 		choixMin=$(echo "$strChoix" | cut -d= -f1)
 		choixNom=$(echo "$strChoix" | cut -d= -f2-)
-		if test "$(echo "$choixNom" | grep "=")" ; then
+		if test "$(echo "$choixNom" | grep "=")"; then
 			echo "Le nom du choix ne devrait pas avoir de symbole '=' en son sein."
 			aide -1
 		fi
 		# Afficher le choix du code prédéfinit
 		strChoixPossible="$strChoixPossible$strChoix,"
 		# Obtenir les choix possible pour ce choix prédéfinit
-		if test "${lstChoixPossible["$choixMin"]}" != ""  ; then
+		if test "${lstChoixPossible["$choixMin"]}" != ""; then
 			echo "La réponse possible '$choixMin' à déjà était ajouter."
 			aide -1
 		fi
 		lstChoixPossible["$choixMin"]="$indiceChoix"
-		if test "${lstChoixPossible["$choixNom"]}" != "" ; then
+		if test "${lstChoixPossible["$choixNom"]}" != ""; then
 			echo "La réponse possible '$choixNom' à déjà était ajouter."
 			aide -1
 		fi
 		lstChoixPossible["$choixNom"]="$indiceChoix"
-		while test $# -ne 0 -a "$(echo "$1" | cut -c1)" = ">" ; do
+		while test $# -ne 0 -a "$(echo "$1" | cut -c1)" = ">"; do
 			choix="$(echo "$1" | cut -c2-)"
-			if test "${lstChoixPossible["$choix"]}" != "" ; then
+			if test "${lstChoixPossible["$choix"]}" != ""; then
 				echo "La réponse possible '$choix' à déjà était ajouter."
 				aide -1
 			fi
@@ -185,9 +182,9 @@ while test $# -ne 0 ; do
 			shift
 		done
 	else
-		if test "$question" = "" ; then
+		if test "$question" = ""; then
 			question="$1"
-		elif test "$strChoixDefault" = "" ; then
+		elif test "$strChoixDefault" = ""; then
 			strChoixDefault="*=$1"
 		else
 			echo "La question et le choix par défault ont déjà était définie."
@@ -199,37 +196,33 @@ while test $# -ne 0 ; do
 	indiceChoix=$((indiceChoix + 1))
 done
 #	# Vérifié que La question est était donnée
-if test "$question" = "" ; then
+if test "$question" = ""; then
 	echo "Aucune question n'à était posé."
 	aide -1
 fi
 #	# Vérifié qu'au moins une possibilité de réponse est était donnée
-if test "$strChoixDefault" = "" -a "${#lstChoixPossible[*]}" = "0" ; then
+if test "$strChoixDefault" = "" -a "${#lstChoixPossible[*]}" = "0"; then
 	echo "L'utilisateur ne peut pas répondre"
 	aide -1
 fi
 #	# Créer la réponse par défault
-if test "$strChoixDefault" = "" ; then
+if test "$strChoixDefault" = ""; then
 	strChoixDefault="*=rien"
 fi
 
-
 # POSER LA QUESTION
 echo -n "$question ?($strChoixPossible$strChoixDefault) : "
-
 
 # OBTENIR LA RÉPONSE
 read -r choix
 choix="$(echo "$choix" | tr "[:upper:]" "[:lower:]")"
 
-
 # ANALYSER LA RÉPONSE
-if test -z "$choix" ; then
+if test -z "$choix"; then
 	exit 0
 fi
 reponse="${lstChoixPossible[$choix]}"
-if ! test -z "$reponse" ; then
+if ! test -z "$reponse"; then
 	exit "$reponse"
 fi
 exit 0
-
