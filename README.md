@@ -25,7 +25,7 @@ git clone https://github.com/meo-pill/generateur_de_projet/
 
 Pour installer le projet, il faut obtenir le dossier du projet puis taper les commandes:
 
-```sh
+```txt
 chmod a+x ./generateur_de_projet/ConfigGenerateur.sh ; ./generateur_de_projet/ConfigGenerateur.sh
 ```
 
@@ -40,7 +40,7 @@ rm -fr ./generateur_de_projet
 
 Pour lancer le programme, il suffit d'exécuter la commande suivante:
 
-```sh
+```txt
 <dossier où se trouve le script de génération de projet>/<script de génération de projet>.sh -h
 ```
 
@@ -91,7 +91,7 @@ Assurez-vous de mettre à jour les tests appropriés, s'il vous plaît.
 
 Les commits doivent suivre [ConventionnalCommits](https://www.conventionalcommits.org/en/v1.0.0/) et doivent être écrits en minuscule et en utilisant la convention suivante:
 
-```sh
+```txt
 <type>([<scope>]): <description>
 ```
 
