@@ -1,4 +1,3 @@
-#!/bin/bash
 : " Affiche le message d erreur d un code donné.
 	paramètre $1 : Le code de l erreur
 	autres paramètres : Les paramètre propre au code de l erreur
@@ -178,10 +177,10 @@ aide() {
 						fi
 					done
 				fi
-			elif ( test "${detail["$1"]}" = "" ) ; then
+			elif test "${detail["$1"]}" = "" ; then
 				echo -e "> Il n'y à pas de paramètres nommée '$1'."
 			else
-				if ( test $( echo "$1" | cut -c1 ) = "%" ) ; then
+				if test "$( echo "$1" | cut -c1 )" = "%" ; then
 					echo -e "\t- $(echo "$1" | cut -c2-) : ${detail["$1"]}"
 				else
 					echo -e "\t- <$1> : ${detail["$1"]}"
@@ -189,76 +188,76 @@ aide() {
 			fi
 			shift
 		done
-	elif ( test $# -ne 0 ) ; then
+	elif test $# -ne 0 ; then
 		echo -n "Trop d'argument donnée à la fonction 'aide' : "
 		for arg in "$@" ; do
 			echo -n "\"$arg\" "
 		done
 		echo ""
-		exit -1
+		exit 255
 	else
 		for param in ${!detail[*]} ; do
-			if ( test $( echo "$param" | cut -c1 ) = "%" ) ; then
+			if test "$( echo "$param" | cut -c1 )" = "%" ; then
 				echo -e "\t- $(echo "$param" | cut -c2-) : ${detail["$param"]}"
 			else
 				echo -e "\t- <$param> : ${detail["$param"]}"
 			fi
 		done
 	fi
-	if ( test "$aideLanguage" = "true" ) ; then
-		rm -f $F_tab
+	if test "$aideLanguage" = "true" ; then
+		rm -f "$F_tab"
 	fi
 	: ' Sortie du programme'
-	if ( test "$1" = "-n" -a "$code_sortie" -ne -1 -a "$code_sortie" -ne 255 ) ; then
-		return $code_sortie
+	if test "$1" = "-n" -a "$code_sortie" -ne -1 -a "$code_sortie" -ne 255 ; then
+		return "$code_sortie"
 	fi
-	exit $code_sortie
+	exit "$code_sortie"
 }
 detailAide="\t- -h [<nomParam>]... : Affiche l'aide :\n\t\t> Du script si pas de paramètres.\n\t\t> Des paramètres demandé si des paramètres suivent le '-h'.\n\t\t\t| Les paramètres fixes (ex: -v|contre-ex:<v>) doivent-être précéder d'un '%'.$detailAide"
 
-: ' Remplace une balise d un fichier du nouveau projet par un texte donnée.
+: " Remplace une balise d un fichier du nouveau projet par un texte donnée.
 	paramètre $1 : Le nom de la balise à remplacer par le contenu de la variable éponyme.
-	paramètre $2 : Le nom du fichier (à l intérieur de "$emplacementProjet") à modifiée.
-	pramètre $3 : Si "/", modifie la chaine à insérer pour que sed marche, malgès la présence de caractère "/".
-	pramètre $3 : Si "d", supprime les lignes possédant la balise.
-	return -1 en cas d erreur, 1 autrement.
-	'
+	paramètre $2 : Le nom du fichier (à l intérieur de 'emplacementProjet') à modifiée.
+	pramètre $3 : Si '/', modifie la chaine à insérer pour que sed marche, malgès la présence de caractère "/".
+	pramètre $3 : Si 'd', supprime les lignes possédant la balise.
+	return 255 en cas d erreur, 1 autrement.
+	"
 modifie() {
 	text=$(eval "echo \"\$$1\"")
-	if ( test $# -lt 2 ) ; then
+	if test $# -lt 2 ; then
 		echo "La fonction 'modifie' prend au moins 2 paramètre :"
 		echo -e "\t> \$1 : Que faut-il modifier ?"
 		echo -e "\t> \$2 : Quel fichier faut-il modifier ?"
-		exit -1
-	elif ( test $# -eq 3 ) ; then
-		if ( test "$3" = "d" ) ; then
+		exit 255
+	elif test $# -eq 3 ; then
+		if test "$3" = "d" ; then
 			text="\d"
 		else
-			text=`echo "$text" | sed "s/\//\\\\\\\\\//g"`
+			text=$(echo "$text" | sed "s/\//\\\\\\\\\//g")
 		fi
-	elif ( test $# -gt 3 ) ; then
+	elif test $# -gt 3 ; then
 		echo "La fonction 'modifie' prend au plus 3 paramètre :"
 		echo -e "\t> \$1 : Que faut-il modifier ?"
 		echo -e "\t> \$2 : Quel fichier faut-il modifier ?"
 		echo -e "\t> \$3 : Option de modification (/,d)"
-		exit -1
+		exit 255
 	fi
-	if ( test "$text" = "\d" ) ; then
+	if test "$text" = "\d" ; then
 		Fichier="$emplacementProjet/$2"
-		sed -i -e "$( grep -n "${balises["$1"]}" $Fichier | cut -d: -f1 )d" $Fichier
+		sed -i -e "$( grep -n "${balises["$1"]}" "$Fichier" | cut -d: -f1 )d" "$Fichier"
 	else
-		sed -i -e "s/${balises["$1"]}/$text/g" $emplacementProjet/$2
+		sed -i -e "s/${balises["$1"]}/$text/g" "$emplacementProjet/$2"
 	fi
 }
 
-: ' Vérifie si un fichier existe déjà
+: "Vérifie si un fichier existe déjà
 	paramètre $1 : Le nom de la variable contenant le nom du fichier
 	paramètre $2 : Le chemin vers le fichier
 	paramètre $3 : L extension du fichier
 	==============================
 	paramètre $1 : -e
 	paramètre $2 : Le nom de la variable contenant le nom du fichier
-	'
+	"
 testFichier() {
 	: ' Définir les variables '
 	quitte="eval \"\$nomVar=\\\"\$nom\\\"\" ; return 0"
@@ -268,17 +267,17 @@ testFichier() {
 	ext=""
 
 	: ' Lire les paramètres '
-	if ( test "$1" = "-e" ) ; then
+	if test "$1" = "-e" ; then
 		quitte="eval \"\$nomVar=\\\"\$chemin/\$nom\$ext\\\"\" ; return 0"
 		shift
 		# Obtenir le nom
 		nomVar=$1 ; shift
 		eval "nom=\"\$$nomVar\""
 		# Séparer le nom
-		chemin=`dirname "$nom"`
-		nom=`basename "$nom"`
-		ext=`echo "$nom" | cut -d. -f2-`
-		if ( test "$ext" = "$nom" ) ; then
+		chemin=$(dirname "$nom")
+		nom=$(basename "$nom")
+		ext=$(echo "$nom" | cut -d. -f2-)
+		if test "$ext" = "$nom" ; then
 			ext=""
 		else
 			ext=".$ext"
@@ -288,7 +287,7 @@ testFichier() {
 		chemin="$1" ; shift
 		eval "nom=\"\$$nomVar\""
 		ext="$1" ; shift
-		if ( test "$ext" != "" ) ; then
+		if test "$ext" != "" ; then
 			ext=".$ext"
 		fi
 	fi
@@ -298,7 +297,7 @@ testFichier() {
 	: ' Tester l existance du fichier '
 	i=2
 	nomF="$chemin/$nom$ext"
-	while ( test -e "$nomF" ) ; do
+	while test -e "$nomF" ; do
 		nom2="$nom"_"$i"
 		echo "Le fichier '$nomF' existe déjà. Que voulez-vous faire ?"
 		echo -e "\t1) Supprimer '$nomF'."
@@ -306,10 +305,10 @@ testFichier() {
 		echo -e "\t3) Renommer '$nom' autrement."
 		echo -e "\t4) Abandonner."
 		echo -n "Choix : "
-		read choix
+		read -r choix
 		case "$choix" in
 			1)
-				$questionneur :v :o :a "rm : supprimer '$nomF' ?" "annuler" ; retour=$?
+				$questionneur :v :o :a "rm : supprimer '$nomF' ?" "annuler" ; retour=$?
 				case $retour in
 					"0") echo "> Annuler suppression" ;;
 					"1"|"2"|"3")
@@ -318,23 +317,23 @@ testFichier() {
 						;;
 					*)
 						echo "ERREUR sur a question."
-						exit -1
+						exit 255
 						;;
 				esac
 				;;
 			2)
 				nom="$nom2"
 				nomF="$chemin/$nom$ext"
-				i=`expr $i + 1`
+				i=$((i + 1))
 				;;
 			3) nouveauNom=""
-				while ( test "$nouveauNom" = "" ) ; do
+				while test "$nouveauNom" = "" ; do
 					echo -n "Entrer le nouveau nom du fichier (:a=abandon,*=nom) : "
-					read nouveauNom
-					if ( test "$nouveauNom" = ":a" ) ; then
+					read -r nouveauNom
+					if test "$nouveauNom" = ":a" ; then
 						echo "> Abandon"
 						return 1
-					elif ( test $( echo "$nouveauNom" | grep "[^a-zA-Z0-9_\-]" ) ) ; then
+					elif test "$( echo "$nouveauNom" | grep "[^a-zA-Z0-9_\-]" )" ; then
 						echo "Le nouveau nom contient des caractère interdit pour un nom de fichier."
 						nouveauNom=""
 					fi
@@ -358,14 +357,14 @@ testFichier() {
 testGit() {
 	detail["github"]="detail[\"github\"]=\"création d'un dépot github 'https://github.com/<pseudo-git>/<nomProjet>' nécesite l'instalation de gh\";github=\"\""
 	balises["github"]="~~ADRESSE_GIT~~"
-	if ( test -z "$github" ) then
-		if ( ! test $(which gh)) then
-			aide ${codeErr["param"]} $LINENO "-g" "-g" "Le paramètre '-g' nécéssite d'avoir 'gh' d'installer sur la machine. Entrez la commande 'apt-get install gh' en mode super-utilisateur pour l'installer, puis réessayer." -h "github"
-			return -1
+	if test -z "$github" ; then
+		if ! test "$(which gh)" ; then
+			aide "${codeErr["param"]}" $LINENO "-g" "-g" "Le paramètre '-g' nécéssite d'avoir 'gh' d'installer sur la machine. Entrez la commande 'apt-get install gh' en mode super-utilisateur pour l'installer, puis réessayer." -h "github"
+			return 255
 		fi
 	else
-		aide ${codeErr["param"]} $LINENO "-g" "-g" "Le paramètre '-g' à déjà était utilisé." -h "github"
-		return -1
+		aide "${codeErr["param"]}" $LINENO "-g" "-g" "Le paramètre '-g' à déjà était utilisé." -h "github"
+		return 255
 	fi
 	return 0
 }
@@ -374,14 +373,14 @@ testGit() {
 	'
 FIN() {
 	echo -e "> Création des liens vers le projet.\n"
-	for lien in ${lstLiens[*]} ; do
-		typeLien=`echo "$lien" | cut -d: -f1`
-		lien=`echo "$lien" | cut -d: -f2-`
+	for lien in "${lstLiens[@]}" ; do
+		typeLien=$(echo "$lien" | cut -d: -f1)
+		lien=$(echo "$lien" | cut -d: -f2-)
 		# Création du lien
-		if ( test "$typeLien" = "s" ) ; then
-			ln -s $emplacementProjet/$F_projet $lien
+		if test "$typeLien" = "s" ; then
+			ln -s "$emplacementProjet/$F_projet" "$lien"
 		else
-			ln $emplacementProjet/$F_projet $lien
+			ln "$emplacementProjet/$F_projet" "$lien"
 		fi
 	done
 	echo -e "\n\tFIN DU PARAMETRAGE DU SCRIPT '$(basename "$F_projet")'."
@@ -390,18 +389,18 @@ FIN() {
 
 
 # Est-ce qu'une demande d'aide à était faite ?
-if ( test "$1" = "-h" ) ; then
+if test "$1" = "-h" ; then
 	shift
-	if ( test $# -eq 0 ) ; then
+	if test $# -eq 0 ; then
 		aide
 	else
-		aide 0 -h $*
+		aide 0 -h "$@"
 	fi
 fi
 
 # Est-ce que Toutes les variables important ont était définit ?
-if ( ! test -v strParam ) ; then
+if ! test -v strParam ; then
 	echo "Veuillez définir le contenu de \$strParam dans le script $0."
-	exit -2
+	exit 254
 fi
 
