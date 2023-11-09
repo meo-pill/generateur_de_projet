@@ -25,7 +25,7 @@ git clone https://github.com/meo-pill/generateur_de_projet/
 
 Pour installer le projet, il faut obtenir le dossier du projet puis taper les commandes:
 
-```txt
+```sh
 chmod a+x ./generateur_de_projet/ConfigGenerateur.sh ; ./generateur_de_projet/ConfigGenerateur.sh
 ```
 
