@@ -16,7 +16,7 @@
 > Script de gestion de version de 1 projet                 (D)
 > !
 	! Version (D) = vD.tC.tBA
-	! Version (C) = vD.tC.tBA(vC.tB.tA)
+	! Version (C) = vD.tC.tBA(vC.tB.tA) 
 	! Version (B) = vD.tC.tBA(vC.tB.tA:vB.tA)
 	! Version (A) = vD.tC.tBA(vC.tB.tA:vB.tA:vA)
 	! vX=version de la catégorie X(voir au dessus pour la liste)
