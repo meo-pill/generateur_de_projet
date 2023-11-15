@@ -27,6 +27,7 @@ codeErr["nbParam"]=1
 codeErr["param"]=2
 codeErr["appel"]=3
 codeErr["export"]=4
+codeErr["cd"]=12
 
 #	# Info sur le nouveau projet
 #	#	# Type du projet
